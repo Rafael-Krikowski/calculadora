@@ -1,0 +1,36 @@
+#calc {
+    background-color: rgb(64, 64, 64);
+    border-radius: 5px;
+    max-width: 400px;
+}
+
+#visor {
+    height: 70px;
+    background-color: rgb(218, 218, 218);
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.707);
+}
+
+input {
+    text-align: right;
+    border-radius: 5px;
+    height: 50px;
+    font-size: 1.7em;
+    padding-right: 10px;
+}
+
+button {
+    height: 70px;
+    border-radius: 5px;
+    background-color: rgb(218, 218, 218);
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.707);
+}
+
+button:hover {
+     background-color: rgb(138, 138, 138);
+}
+
+#botoes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+}
