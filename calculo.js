@@ -63,6 +63,9 @@ function calcular(){
     var indices = []
     var base = []
     var expoente = []
+    var potenciaTexto = ''
+    var indiceInicioCorte = null
+    var indiceFinalCorte = null
 
     for(var i = 0; i < expressoes.length; i++){
         if(expressoes[i] == '^'){
@@ -71,14 +74,51 @@ function calcular(){
     }
 
     if(expressoes[indices[0] - 1] == ')'){
-        var indiceInicio = organizarParenteses(indices[0] - 1)
+        var indiceInicio = organizarParenteses(indices[0] - 1, ')')
         var indiceFinal = indices[0] - 1
 
+        indiceInicioCorte = indiceInicio
+
+        for(var i = indiceInicio + 1; i < indiceFinal; i++){
+            base.push(expressoes[i])
+        }
+
+        console.log('-------------------*--------------------*-----------------')
         console.log('inicio: ' + indiceInicio + ' | ' + 'fim: ' + indiceFinal)
+        console.log(base)
+        console.log('-------------------*--------------------*-----------------')
     }
+    
+    if(expressoes[indices[0] + 1] == '('){
+        var indiceInicio = indices[0] + 1
+        var indiceFinal = organizarParenteses(indices[0] + 1, '(')
+
+        indiceFinalCorte = indiceFinal
+
+        for(var i = indiceInicio + 1; i < indiceFinal; i++){
+            expoente.push(expressoes[i])
+        }
+
+        console.log('-------------------*--------------------*-----------------')
+        console.log('inicio: ' + indiceInicio + ' | ' + 'fim: ' + indiceFinal)
+        console.log(expoente)
+        console.log('-------------------*--------------------*-----------------')
+    }
+
+    base = base.join('')
+    expoente = expoente.join('')
+    potenciaTexto = 'Math.pow(' + base + ', ' + expoente + ')'
+    expressoesTexto = expressoes.join('')
+    expressoesTexto = expressoesTexto.slice(0, indiceInicioCorte) + potenciaTexto + expressoesTexto.slice(indiceFinalCorte + 1)
+
+    var resultado = eval(expressoesTexto)
+
+    console.log(potenciaTexto)
+    console.log(expressoesTexto)
+    console.log('resultado: ' + resultado)
 }
 
-function organizarParenteses(valor){
+function organizarParenteses(valor, direcao){
     var parenteses = []
     var indicesParenteses = []
 
@@ -93,28 +133,37 @@ function organizarParenteses(valor){
     var indiceElemento = indicesParenteses.indexOf(valor)
     var indiceProcurado = []
 
-    for(var i = indiceElemento - 1; i >= 0; i--){
-        if(parenteses[i] == ")"){
-            cont++
+    if(direcao == ')'){
+        for(var i = indiceElemento - 1; i >= 0; i--){
+            if(parenteses[i] == ")"){
+                cont++
+            }
+            else{
+                cont--
+            }
+    
+            if(cont == 0){
+                indiceProcurado.push(indicesParenteses[i])
+            }
         }
-        else{
-            cont--
-        }
+    }
 
-        if(cont == 0){
-            indiceProcurado.push(indicesParenteses[i])
-        }
+    if(direcao == '('){
+        for(var i = indiceElemento + 1; i < expressoes.length; i++){
+            if(parenteses[i] == '('){
+                cont++
+            }
+            else{
+                cont--
+            }
 
-        console.log('cont: ' + cont)
+            if(cont == 0){
+                indiceProcurado.push(indicesParenteses[i])
+            }
+        }
     }
 
     return indiceProcurado[0]
-
-
-
-    console.log('indice: ' + indicesParenteses)
-    console.log(parenteses)
-    console.log('indices procurados:' + indiceProcurado)
 }
 
 
