@@ -1,121 +1,162 @@
 var visor = document.getElementById('visor')
 var expressoes = []
-var operacoes = ['+', '-', '*', '/']
-var operacoesEspeciais = ['^(', '\u221A' + '(', '!(', 'log(']
 var expressoesTexto = ''
 
-
 function inserirValor(){
+    if(arguments[0] == 'pi'){
+        expressoes.push(String.fromCharCode(960))
+    }
+    else{
+        expressoes.push(arguments[0])
+    }
+
+    console.log(expressoes)
+
+    organizarOperacoes()
+
     if(expressoes.length >= 24){
         return
     }
 
-    expressoes.push(arguments[1])
-
-    var ultimoCaractere = expressoes.slice(-1)[0]
-    var penultimoCaractere = expressoes.slice(-2)[0]
-
-            if(penultimoCaractere == '*' && ultimoCaractere == '*'){
-                ultimoCaractere = '^'
-                expressoes.pop()
-                expressoes[expressoes.length - 1] = ultimoCaractere
-                expressoes.push('(')
-            }
-
-            if(penultimoCaractere == '/' && ultimoCaractere == '/'){
-                ultimoCaractere = '\u221A'
-                expressoes.pop()
-                expressoes[expressoes.length - 1] = ultimoCaractere
-                expressoes.push('(')
-            }
-
-            if(penultimoCaractere == '+' && ultimoCaractere == '+'){
-                ultimoCaractere = '!'
-                expressoes.pop()
-                expressoes[expressoes.length - 1] = ultimoCaractere
-                expressoes.push('(')
-            }
-
-            if(penultimoCaractere == '-' && ultimoCaractere == '-'){
-                ultimoCaractere = 'log'
-                expressoes.pop()
-                expressoes[expressoes.length - 1] = ultimoCaractere
-                expressoes.push('(')
-            }
-
     expressoesTexto = expressoes.join('')
     visor.value = expressoesTexto
-
-}
-
-function apagar(){
-    expressoes.pop()
-    expressoesTexto = expressoes.join('')
-    visor.value = expressoesTexto
-}
-
-function limpar(){
-    expressoes = ''
-    visor.ariaPlaceholder = '0'
 }
 
 function calcular(){
-    var indices = []
+    potenciacao()
+    logaritmo()
+}
+
+function potenciacao(){
+    var qtdeOperacoes = 0
+    var indiceOperacao = 0
     var base = []
     var expoente = []
-    var potenciaTexto = ''
-    var indiceInicioCorte = null
-    var indiceFinalCorte = null
+    var potencia = []
 
     for(var i = 0; i < expressoes.length; i++){
         if(expressoes[i] == '^'){
-            indices.push(i)
+            qtdeOperacoes++
         }
     }
 
-    if(expressoes[indices[0] - 1] == ')'){
-        var indiceInicio = organizarParenteses(indices[0] - 1, ')')
-        var indiceFinal = indices[0] - 1
+    for(var i2 = 0; i2 < qtdeOperacoes; i2++){
+        var indiceInicioCorte = null
+        var indiceFinalCorte = null
 
-        indiceInicioCorte = indiceInicio
-
-        for(var i = indiceInicio + 1; i < indiceFinal; i++){
-            base.push(expressoes[i])
+        for(var n = 0; n < expressoes.length; n++){
+            if(expressoes[n] == '^'){
+                indiceOperacao = n
+            }
         }
 
-        console.log('-------------------*--------------------*-----------------')
-        console.log('inicio: ' + indiceInicio + ' | ' + 'fim: ' + indiceFinal)
-        console.log(base)
-        console.log('-------------------*--------------------*-----------------')
-    }
+        if(expressoes[indiceOperacao - 1] == ')'){
+            var indiceInicioBase = organizarParenteses(indiceOperacao - 1, ')')
+            var indiceFinalBase = indiceOperacao - 1
     
-    if(expressoes[indices[0] + 1] == '('){
-        var indiceInicio = indices[0] + 1
-        var indiceFinal = organizarParenteses(indices[0] + 1, '(')
-
-        indiceFinalCorte = indiceFinal
-
-        for(var i = indiceInicio + 1; i < indiceFinal; i++){
-            expoente.push(expressoes[i])
+            indiceInicioCorte = indiceInicioBase
+    
+            for(var j = indiceInicioBase + 1; j < indiceFinalBase; j++){
+                base.push(expressoes[j])
+            }
         }
 
-        console.log('-------------------*--------------------*-----------------')
-        console.log('inicio: ' + indiceInicio + ' | ' + 'fim: ' + indiceFinal)
-        console.log(expoente)
-        console.log('-------------------*--------------------*-----------------')
+        if(expressoes[indiceOperacao + 1] == '('){
+            var indiceInicioExpoente = indiceOperacao + 1
+            var indiceFinalExpoente = organizarParenteses(indiceOperacao + 1, '(')
+    
+            indiceFinalCorte = indiceFinalExpoente
+    
+            for(var j2 = indiceInicioExpoente + 1; j2 < indiceFinalExpoente; j2++){
+                expoente.push(expressoes[j2])
+            }
+        }
+
+        potencia = ['Math.pow', '(']
+        potencia = potencia.concat(base)
+        potencia.push(',')
+        potencia = potencia.concat(expoente)
+        potencia.push(')')
+
+        base = []
+        expoente = []
+
+        var parte1 = []
+        var parte2 = []
+
+        for(var i3 = 0; i3 < indiceInicioCorte; i3++){
+            parte1.push(expressoes[i3])
+        }
+
+        for(var i4 = indiceFinalCorte + 1; i4 < expressoes.length; i4++){
+            parte2.push(expressoes[i4])
+        }
+        
+        expressoes = parte1.concat(potencia, parte2)
+        expressoesTexto = expressoes.join('')
     }
 
-    base = base.join('')
-    expoente = expoente.join('')
-    potenciaTexto = 'Math.pow(' + base + ', ' + expoente + ')'
-    expressoesTexto = expressoes.join('')
-    expressoesTexto = expressoesTexto.slice(0, indiceInicioCorte) + potenciaTexto + expressoesTexto.slice(indiceFinalCorte + 1)
-
-    var resultado = eval(expressoesTexto)
-
-    console.log(potenciaTexto)
     console.log(expressoesTexto)
-    console.log('resultado: ' + resultado)
+}
+
+function logaritmo(){
+    var qtdeOperacoesLog = 0
+    var indiceLog = 0
+
+    var logaritmoResultado = []
+    var logaritmando = []
+    var baseLog = []
+
+    for(var i = 0; i < expressoes.length; i++){
+        if(expressoes[i] == 'log'){
+            qtdeOperacoesLog++
+        }
+    }
+
+    for(var i = 0; i < qtdeOperacoesLog; i++){
+        var indiceInicioLog = null
+        var indiceFinalLog = null
+
+        for(var j = 0; j < expressoes.length; j++){
+            if(expressoes[j] == 'log'){
+                indiceLog = j
+            }
+        }
+
+        if(expressoes[indiceLog + 1] == '('){
+            indiceInicioLog = indiceLog + 1
+            indiceFinalLog = organizarParenteses(indiceLog + 1, '(')
+
+            if(expressoes[indiceFinalLog + 1] == '('){
+                for(var j2 = indiceInicioLog + 1; j2 < indiceFinalLog;  j2++){
+                    baseLog.push(expressoes[j2])
+                }
+
+                for(var j3 = indiceFinalLog + 2; j3 < organizarParenteses(indiceFinalLog + 1, '('); j3++){
+                    logaritmando.push(expressoes[j3])
+                }
+            }
+            else{
+                baseLog.push('10')
+
+                for(var j4 = indiceInicioLog + 1; j4 < indiceFinalLog;  j4++){
+                    logaritmando.push(expressoes[j4])
+                }
+            }
+        }
+
+        logaritmoResultado = ['Math.log', '(']
+        logaritmoResultado = logaritmoResultado.concat(logaritmando)
+        logaritmoResultado.push(')', '/', 'Math.log', '(')
+        logaritmoResultado = logaritmoResultado.concat(baseLog)
+        logaritmoResultado.push(')')
+
+        console.log(baseLog)
+        console.log(logaritmando)
+        console.log(logaritmoResultado)
+    }
+
+    console.log(expressoes)
 }
 
 function organizarParenteses(valor, direcao){
@@ -166,5 +207,146 @@ function organizarParenteses(valor, direcao){
     return indiceProcurado[0]
 }
 
+function organizarOperacoes(){
+    if( expressoes[expressoes.length - 1] == '+' &&
+    expressoes[expressoes.length - 2] == '+'){
+        expressoes.pop()
+        expressoes.pop()
+        expressoes.push('-')
+    }
+
+    if( expressoes[expressoes.length - 1] == '+' &&
+        expressoes[expressoes.length - 2] == '-'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('+')
+    }
+
+    if( expressoes[expressoes.length - 1] == '*' &&
+        expressoes[expressoes.length - 2] == '*'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('/')
+    }
+
+    if( expressoes[expressoes.length - 1] == '*' &&
+        expressoes[expressoes.length - 2] == '/'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('*')
+    }
+
+    if( expressoes[expressoes.length - 1] == '+' &&
+        expressoes[expressoes.length - 2] == '*'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('+')
+    }
+
+    if( expressoes[expressoes.length - 1] == '*' &&
+        expressoes[expressoes.length - 2] == '+'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('*')
+    }
+
+    if( expressoes[expressoes.length - 1] == '/' &&
+        expressoes[expressoes.length - 2] == '+'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('/')
+    }
+
+    if( expressoes[expressoes.length - 1] == '+' &&
+        expressoes[expressoes.length - 2] == '/'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('+')
+    }
+
+    if( expressoes[expressoes.length - 1] == '/' &&
+        expressoes[expressoes.length - 2] == '-'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('/')
+    }
+
+    if( expressoes[expressoes.length - 1] == '-' &&
+        expressoes[expressoes.length - 2] == '/'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('-')
+    }
+
+    if( expressoes[expressoes.length - 1] == '*' &&
+        expressoes[expressoes.length - 2] == '-'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('*')
+    }
+
+    if( expressoes[expressoes.length - 1] == '-' &&
+        expressoes[expressoes.length - 2] == '*'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('-')
+    }
+
+    if( expressoes[expressoes.length - 1] == '^' &&
+        expressoes[expressoes.length - 2] == '^'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('log')
+    }
+
+    if( expressoes[expressoes.length - 1] == '^' &&
+        expressoes[expressoes.length - 2] == 'log'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('!')
+    }
+
+    if( expressoes[expressoes.length - 1] == '^' &&
+        expressoes[expressoes.length - 2] == '!'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('^')
+    }
+
+    if( expressoes[expressoes.length - 1] == '.' &&
+        expressoes[expressoes.length - 2] == '.'){
+            expressoes.pop()
+            
+    }
+
+    if( expressoes[expressoes.length - 1] == String.fromCharCode(960) &&
+        expressoes[expressoes.length - 2] == String.fromCharCode(960)){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push('e')
+            
+    }
+
+    if( expressoes[expressoes.length - 1] == String.fromCharCode(960) &&
+        expressoes[expressoes.length - 2] == 'e'){
+            expressoes.pop()
+            expressoes.pop()
+            expressoes.push(String.fromCharCode(960))
+            
+    }
+}
+
+function apagar(){
+    expressoes.pop()
+    expressoesTexto = expressoes.join('')
+    visor.value = expressoesTexto
+}
+
+function limpar(){
+    expressoes = []
+    expressoesTexto = expressoes.join('')
+    visor.value = expressoesTexto
+    visor.ariaPlaceholder = '0'
+}
 
 

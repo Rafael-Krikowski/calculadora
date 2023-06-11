@@ -29,35 +29,35 @@
 
         <div class="row mt-4">
             <div class="mb-4 col-12" id="botoes">
-                    <button onclick="inserirValor('operacao', '&#40;')" id="par-esquerdo"> &#40; </button>
-                    <button onclick="inserirValor('operacao', '&#41;')" id="par-direito"> &#41; </button>
-                    <button ondblclick="limpar()" onclick="apagar()" id="apagar"> &#9003; | C </button>
+                    <button onclick="limpar()"> C </button>
+                    <button onclick="apagar()"> &#9003; </button>
 
-                    <button onclick="inserirValor('operacao', '*', '^')" id="x"type="button"> * | ^ </button>
+                    <button onclick="inserirValor('&#40;')" > &#40; </button>
+                    <button onclick="inserirValor('&#41;')" > &#41; </button>
 
-                    <button onclick="inserirValor('numero', '7')" id="sete" type="button">7</button>
-                    <button onclick="inserirValor('numero', '8')" id="oito" type="button">8</button>
-                    <button onclick="inserirValor('numero', '9')" id="nove" type="button">9</button>
+                    <button onclick="inserirValor('7')" type="button">7</button>
+                    <button onclick="inserirValor('8')" type="button">8</button>
+                    <button onclick="inserirValor('9')" type="button">9</button>
 
-                    <button onclick="inserirValor('operacao', '/', '&#8730;&#40;')" id="divisao" type="button"> / | &#8730; </button>
+                    <button onclick="inserirValor('^', '!')" type="button"> ^ | log | ! </button>
 
-                    <button onclick="inserirValor('numero', '4')" id="quatro" type="button">4</button>
-                    <button onclick="inserirValor('numero', '5')" id="cinco" type="button">5</button>
-                    <button onclick="inserirValor('numero', '6')" id="seis" type="button">6</button>
+                    <button onclick="inserirValor('4')" type="button">4</button>
+                    <button onclick="inserirValor('5')" type="button">5</button>
+                    <button onclick="inserirValor('6')" type="button">6</button>
 
-                    <button onclick="inserirValor('operacao', '-', 'log')" id="menos" type="button"> - | log </button>
+                    <button onclick="inserirValor('*', '/')" type="button"> * | / </button>
 
-                    <button onclick="inserirValor('numero', '1')" id="um" type="button">1</button>
-                    <button onclick="inserirValor('numero', '2')" id="dois" type="button">2</button>
-                    <button onclick="inserirValor('numero', '3')" id="tres" type="button">3</button>
+                    <button onclick="inserirValor('1')" type="button">1</button>
+                    <button onclick="inserirValor('2')" type="button">2</button>
+                    <button onclick="inserirValor('3')" type="button">3</button>
 
-                    <button onclick="inserirValor('operacao', '+', '!')" id="soma" type="button"> + | ! </button>
+                    <button onclick="inserirValor('+', '-')" type="button"> + | - </button>
             
-                    <button onclick="inserirValor('numero', '0')" id="zero" type="button">0</button>
-                    <button onclick="inserirValor('numero', '.')" id="ponto" type="button">.</button>
-                    <button onclick="inserirValor('numero', '&pi;', 'e')" id="shift"> e | &pi; </button>
+                    <button onclick="inserirValor('0')" type="button">0</button>
+                    <button onclick="inserirValor('.')" type="button">.</button>
+                    <button onclick="inserirValor('pi', 'e')"> &pi; | e</button>
 
-                    <button onclick="calcular()" id="igual" type="button">=</button>
+                    <button onclick="calcular()" type="button">=</button>
             </div>
         </div>
     </div>
