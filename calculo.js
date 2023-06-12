@@ -10,13 +10,11 @@ function inserirValor(){
         expressoes.push(arguments[0])
     }
 
-    console.log(expressoes)
-
-    organizarOperacoes()
-
     if(expressoes.length >= 24){
         return
     }
+
+    organizarOperacoes()
 
     expressoesTexto = expressoes.join('')
     visor.value = expressoesTexto
@@ -25,6 +23,28 @@ function inserirValor(){
 function calcular(){
     potenciacao()
     logaritmo()
+    numeroPi()
+    numeroE()
+    fatorial()
+
+    expressoesTexto = expressoes.join('')
+
+    try {
+        visor.value = eval(expressoesTexto)
+
+        if(visor.value == 'NaN'){
+            visor.value = 'Indeterminado'
+        }
+    } catch (error) {
+        visor.value = 'Erro!! Verifique a sintaxe'
+    }
+    
+
+    console.log(expressoes)
+    console.log(expressoesTexto)
+
+    expressoes = []
+    expressoesTexto = ''
 }
 
 function potenciacao(){
@@ -51,7 +71,7 @@ function potenciacao(){
         }
 
         if(expressoes[indiceOperacao - 1] == ')'){
-            var indiceInicioBase = organizarParenteses(indiceOperacao - 1, ')')
+            var indiceInicioBase = determinarIndiceParentesesFechamento(indiceOperacao - 1, ')')
             var indiceFinalBase = indiceOperacao - 1
     
             indiceInicioCorte = indiceInicioBase
@@ -63,7 +83,7 @@ function potenciacao(){
 
         if(expressoes[indiceOperacao + 1] == '('){
             var indiceInicioExpoente = indiceOperacao + 1
-            var indiceFinalExpoente = organizarParenteses(indiceOperacao + 1, '(')
+            var indiceFinalExpoente = determinarIndiceParentesesFechamento(indiceOperacao + 1, '(')
     
             indiceFinalCorte = indiceFinalExpoente
     
@@ -95,8 +115,6 @@ function potenciacao(){
         expressoes = parte1.concat(potencia, parte2)
         expressoesTexto = expressoes.join('')
     }
-
-    console.log(expressoesTexto)
 }
 
 function logaritmo(){
@@ -125,16 +143,18 @@ function logaritmo(){
 
         if(expressoes[indiceLog + 1] == '('){
             indiceInicioLog = indiceLog + 1
-            indiceFinalLog = organizarParenteses(indiceLog + 1, '(')
+            indiceFinalLog = determinarIndiceParentesesFechamento(indiceInicioLog, '(')
 
             if(expressoes[indiceFinalLog + 1] == '('){
                 for(var j2 = indiceInicioLog + 1; j2 < indiceFinalLog;  j2++){
                     baseLog.push(expressoes[j2])
                 }
 
-                for(var j3 = indiceFinalLog + 2; j3 < organizarParenteses(indiceFinalLog + 1, '('); j3++){
+                for(var j3 = indiceFinalLog + 2; j3 < determinarIndiceParentesesFechamento(indiceFinalLog + 1, '('); j3++){
                     logaritmando.push(expressoes[j3])
                 }
+
+                indiceFinalLog = determinarIndiceParentesesFechamento(indiceFinalLog + 1, '(')
             }
             else{
                 baseLog.push('10')
@@ -151,15 +171,135 @@ function logaritmo(){
         logaritmoResultado = logaritmoResultado.concat(baseLog)
         logaritmoResultado.push(')')
 
-        console.log(baseLog)
-        console.log(logaritmando)
-        console.log(logaritmoResultado)
-    }
+        var parte1Log = []
+        var parte2Log = []
 
-    console.log(expressoes)
+        for(var n = 0; n < indiceLog; n++){
+            parte1Log.push(expressoes[n])
+        }
+
+        for(var n2 = indiceFinalLog + 1; n2 < expressoes.length; n2++){
+            parte2Log.push(expressoes[n2])
+        }
+
+        expressoes = parte1Log.concat(logaritmoResultado, parte2Log)
+
+        parte1Log = []
+        parte2Log = []
+        baseLog = []
+        logaritmando = []
+    }
 }
 
-function organizarParenteses(valor, direcao){
+function numeroPi(){
+    var qtdePi = 0
+    var indicePi = 0
+
+    for(var i = 0; i < expressoes.length; i++){
+        if(expressoes[i] == String.fromCharCode(960)){
+            qtdePi++
+        }
+    }
+
+    for(var i = 0; i < qtdePi; i++){
+        for(var j = 0; j < expressoes.length; j++){
+            if(expressoes[j] == String.fromCharCode(960)){
+                indicePi = j
+            }
+        }
+
+        expressoes[indicePi] = 'Math.PI'
+    }
+
+}
+
+function numeroE(){
+    var qtdeE = 0
+    var indiceE = 0
+
+    for(var i = 0; i < expressoes.length; i++){
+        if(expressoes[i] == 'e'){
+            qtdeE++
+        }
+    }
+
+    for(var i = 0; i < qtdeE; i++){
+        for(var j = 0; j < expressoes.length; j++){
+            if(expressoes[j] == 'e'){
+                indiceE = j
+            }
+        }
+
+        expressoes[indiceE] = 'Math.E'
+    }
+
+}
+
+function fatorial(){
+    var qtdeFat = 0
+    var indiceFat = 0
+    var expressaoFatorial = []
+    var fatorialResultado = []
+
+    for(var i = 0; i < expressoes.length; i++){
+        if(expressoes[i] == '!'){
+            qtdeFat++
+        }
+    }
+
+    for(var i = 0; i < qtdeFat; i++){
+        var indiceInicioFat = null
+        var indiceFinalFat = null
+
+        for(var j = 0; j < expressoes.length; j++){
+            if(expressoes[j] == '!'){
+                indiceFat = j
+            }
+        }
+
+        if(expressoes[indiceFat + 1] == '('){
+            indiceInicioFat = indiceFat + 1
+            indiceFinalFat = determinarIndiceParentesesFechamento(indiceInicioFat, '(')
+
+            for(var j = indiceInicioFat + 1; j < indiceFinalFat; j++){
+                expressaoFatorial.push(expressoes[j])
+            }
+        }
+
+        fatorialResultado = ['calcularFatorial', '(']
+        fatorialResultado = fatorialResultado.concat(expressaoFatorial)
+        fatorialResultado.push(')')
+
+        var parte1Fat = []
+        var parte2Fat = []
+
+        for(var j = 0; j < indiceFat; j++){
+            parte1Fat.push(expressoes[j])
+        }
+
+        for(var j = indiceFinalFat + 1; j < expressoes.length; j++){
+            parte2Fat.push(expressoes[j])
+        }
+
+        expressoes = parte1Fat.concat(fatorialResultado, parte2Fat)
+
+        expressaoFatorial = []
+        parte1Fat = []
+        parte2Fat = []
+        fatorialResultado = []
+    }
+}
+
+function calcularFatorial(n){
+    if(n == 1 || n == 0){
+        return 1
+    }
+    else{
+        return n * calcularFatorial(n - 1)
+    }
+}
+
+function determinarIndiceParentesesFechamento(valor, direcao){
     var parenteses = []
     var indicesParenteses = []
 
