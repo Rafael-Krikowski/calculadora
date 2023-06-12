@@ -28,6 +28,7 @@ function calcular(){
     fatorial()
 
     expressoesTexto = expressoes.join('')
+    console.log(expressoes)
 
     try {
         visor.value = eval(expressoesTexto)
@@ -38,10 +39,6 @@ function calcular(){
     } catch (error) {
         visor.value = 'Erro!! Verifique a sintaxe'
     }
-    
-
-    console.log(expressoes)
-    console.log(expressoesTexto)
 
     expressoes = []
     expressoesTexto = ''
@@ -80,6 +77,13 @@ function potenciacao(){
                 base.push(expressoes[j])
             }
         }
+        else{
+            indiceInicioCorte = determinarIndiceOperacaolimitante(indiceOperacao, -1)
+
+            for(var k = determinarIndiceOperacaolimitante(indiceOperacao, -1); k < indiceOperacao; k++){
+                base.push(expressoes[k])
+            }
+        }
 
         if(expressoes[indiceOperacao + 1] == '('){
             var indiceInicioExpoente = indiceOperacao + 1
@@ -91,13 +95,19 @@ function potenciacao(){
                 expoente.push(expressoes[j2])
             }
         }
+        else{
+            indiceFinalCorte = determinarIndiceOperacaolimitante(indiceOperacao, 1) - 1
+            for(var k = indiceOperacao + 1; k < determinarIndiceOperacaolimitante(indiceOperacao, 1); k++){
+                expoente.push(expressoes[k])
+            }
+        }
 
         potencia = ['Math.pow', '(']
         potencia = potencia.concat(base)
         potencia.push(',')
         potencia = potencia.concat(expoente)
         potencia.push(')')
-
+        
         base = []
         expoente = []
 
@@ -163,6 +173,14 @@ function logaritmo(){
                     logaritmando.push(expressoes[j4])
                 }
             }
+        }
+        else{
+            indiceFinalLog = determinarIndiceOperacaolimitante(indiceLog, 1) + 1
+
+            for(var k = indiceLog + 1; k < determinarIndiceOperacaolimitante(indiceLog, 1); k++){
+                logaritmando.push(expressoes[k])
+            }
+            baseLog.push('10')
         }
 
         logaritmoResultado = ['Math.log', '(']
@@ -345,6 +363,41 @@ function determinarIndiceParentesesFechamento(valor, direcao){
     }
 
     return indiceProcurado[0]
+}
+
+function determinarIndiceOperacaolimitante(indiceElemento, direcao){
+    var indiceOperacoes = []
+    var indiceElementoNasOperacoes = null
+    var indiceLocal = null
+    var indiceRetorno = null
+
+    for(var i = 0; i < expressoes.length; i++){
+        if(!(parseFloat(expressoes[i])) && expressoes[i] != 0){
+            indiceOperacoes.push(i)
+        }
+    }
+
+    indiceElementoNasOperacoes = indiceOperacoes.indexOf(indiceElemento)
+
+    if(direcao == -1){
+        if(indiceElementoNasOperacoes == 0){
+            return 0
+        }
+
+        indiceLocal = indiceElementoNasOperacoes - 1
+        indiceRetorno = indiceOperacoes[indiceLocal] + 1
+    }
+
+    if(direcao != -1){
+        if(indiceElementoNasOperacoes == indiceOperacoes.length - 1){
+            return expressoes.length
+        }
+
+        indiceLocal = indiceElementoNasOperacoes + 1
+        indiceRetorno = indiceOperacoes[indiceLocal]
+    }
+
+    return indiceRetorno
 }
 
 function organizarOperacoes(){
